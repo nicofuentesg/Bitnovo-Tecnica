@@ -55,6 +55,7 @@ function LayoutContent() {
       screenOptions={{
         headerStyle: { backgroundColor: "#fff" },
         headerTintColor: "#002859",
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontFamily: "Mulish-Bold",
           fontSize: 18,

@@ -18,9 +18,10 @@ export const options = {
 
 export default function HomeScreen() {
     const { selectedCurrency } = useGlobal();
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState<number | null>(0);
 
     const [isFocused, setIsFocused] = useState(false);
+    const [isConceptFocused, setIsConceptFocused] = useState(false);
     const [concept, setConcept] = useState('');
     const [conceptInteracted, setConceptInteracted] = useState(false);
     const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -53,9 +54,9 @@ export default function HomeScreen() {
 
     useEffect(() => {
         navigation.setOptions({
-          title: isFocused ? 'Importe a pagar' : 'Crear Pago',
+          title: (isFocused || isConceptFocused) ? 'Importe a pagar' : 'Crear Pago',
         });
-      }, [isFocused]);
+      }, [isFocused, isConceptFocused]);
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -80,16 +81,15 @@ export default function HomeScreen() {
     };
 
     const handleAmountChange = (value: number | null) => {
-        setAmount(value ?? 0);
+        setAmount(value);
     };
 
     const handleConfirm = async () => {
         try {
             await createOrderMutation({
-                amount,
+                amount: amount ?? 0,
                 fiat: selectedCurrency.abbreviation,
                 concept,
-                
             });
         } catch (error) {
             console.error('Error al crear la orden:', error);
@@ -125,30 +125,46 @@ export default function HomeScreen() {
                     <View className='h-20'/>
                     <View className='flex-1 items-center'>
                         <View className='flex-row items-center justify-center py-2 '>
-                            {selectedCurrency.abbreviation !== 'EUR' && (
-                                <Text className={`text-5xl py-2 mulish-bold ${amount > 0 ? 'text-accent' : 'text-tertiary'} pr-2`}>
-                                    {selectedCurrency.symbol}
-                                </Text>
-                            )}
-                            <CurrencyInput
-                                value={amount}
-                                onChangeValue={handleAmountChange}
-                                delimiter={getDelimiter()}
-                                separator={getDecimalSeparator()}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
-                                precision={2}
-                                minValue={0}
-                                style={{
-                                    backgroundColor: 'transparent',
-                                    height: 64, 
-                                  }}
-                                className={`text-5xl  mulish-bold pt-2 ${amount > 0 ? 'text-accent' : 'text-tertiary'}`}
-                            />
-                            {selectedCurrency.abbreviation === 'EUR' && (
-                                <Text className={`text-4xl mulish-bold ${amount > 0 ? 'text-accent' : 'text-tertiary'} pl-2`}>
-                                    {selectedCurrency.symbol}
-                                </Text>
+                        {selectedCurrency.abbreviation !== 'EUR' && (
+                                        <Text style={{ fontSize: 40, paddingVertical: 8, fontFamily: 'mulish-bold', color: isFocused ? '#035AC5' : ((amount ?? 0) > 0 ? '#035AC5' : '#C0CCDA'), paddingRight: 8 }}>
+                                            {selectedCurrency.symbol}
+                                        </Text>
+                                    )}
+                               <CurrencyInput  
+                                        value={amount}
+                                        onChangeValue={handleAmountChange}
+                                        delimiter={getDelimiter()}
+                                        separator={getDecimalSeparator()}
+                                        placeholder={isFocused ? '' : selectedCurrency.abbreviation === 'EUR' ? '0,00' : '0.00'}
+                                        placeholderTextColor={isFocused ? '#035AC5' : ((amount ?? 0) > 0 ? '#035AC5' : '#C0CCDA')}
+                                        onFocus={() => {
+                                            setIsFocused(true);
+                                            if (amount === 0) {
+                                                setAmount(null);
+                                            }
+                                        }}
+                                        onBlur={() => {
+                                            setIsFocused(false);
+                                            if (amount === null) {
+                                                setAmount(0);
+                                            }
+                                        }}
+                                        cursorColor={"#035AC5"}
+                                        precision={2}
+                                        minValue={0}
+                                        style={{
+                                            backgroundColor: 'transparent',
+                                            height: 64,
+                                            fontSize: 40,
+                                            fontFamily: 'mulish-bold',
+                                            color: isFocused ? '#035AC5' : ((amount ?? 0) > 0 ? '#035AC5' : '#C0CCDA'),
+                                            marginTop: 8,
+                                        }}
+                                    />
+                                    {selectedCurrency.abbreviation === 'EUR' && (
+                                          <Text style={{ fontSize: 40, paddingVertical: 8, fontFamily: 'mulish-bold', color: isFocused ? '#035AC5' : ((amount ?? 0) > 0 ? '#035AC5' : '#C0CCDA'), paddingRight: 8 }}>
+                                          {selectedCurrency.symbol}
+                                      </Text>
                             )}
                         </View>
                         <View className='w-full  items-start pt-12'>
@@ -161,7 +177,11 @@ export default function HomeScreen() {
                                     setConcept(text);
                                     setConceptInteracted(true);
                                 }}
-                                onFocus={() => setConceptInteracted(true)} 
+                                onFocus={() => {
+                                    setConceptInteracted(true);
+                                    setIsConceptFocused(true);
+                                }}
+                                onBlur={() => setIsConceptFocused(false)}
                                 placeholder={'Añade descripción del pago'}
                                 showCounter={true}
                                 maxLength={140}
@@ -180,7 +200,7 @@ export default function HomeScreen() {
                     >
                         <PrimaryButton
                             text="Confirmar"
-                            enabled={amount > 0 && conceptInteracted}
+                            enabled={(amount ?? 0) > 0 && conceptInteracted}
                             onPress={handleConfirm}
                         />
                     </View>
