@@ -157,6 +157,7 @@ export default function HomeScreen() {
                                             height: 64,
                                             fontSize: 40,
                                             fontFamily: 'mulish-bold',
+                                            paddingBottom: Platform.OS === 'ios' ? 8 : 0,
                                             color: isFocused ? '#035AC5' : ((amount ?? 0) > 0 ? '#035AC5' : '#C0CCDA'),
                                             marginTop: 8,
                                         }}
