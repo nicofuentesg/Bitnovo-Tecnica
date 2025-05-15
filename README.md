@@ -1,5 +1,4 @@
-# Bitnovo-Tecnica
-=======
+
 # Bitnovo Técnica
 
 Aplicación móvil desarrollada con React Native y Expo, diseñada para proporcionar una experiencia de usuario moderna y eficiente.
