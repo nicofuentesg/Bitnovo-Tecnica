@@ -50,7 +50,7 @@ export const EditableField = ({
             <View className={`flex-row items-center p-5 rounded-xl border-2 border-accent/80 w-full bg-white ${className}`}>
                 <Image source={icon} className="w-6 h-6 mr-3" />
                 <TouchableOpacity className="flex-row items-center" onPress={handleNavigation}>
-                    <Text className="text-primary font-mulish-regular mr-2 text-sm">{selectedCountry.dial_code}</Text>
+                    <Text className="text-primary font-mulish-regular mr-2 text-lg">{selectedCountry.dial_code}</Text>
                     <Image source={require('../../assets/arrow-down.png')} className="w-4 h-4 mr-2" resizeMode="contain" />
                 </TouchableOpacity>
                 <TextInput
@@ -59,14 +59,14 @@ export const EditableField = ({
                     onBlur={handleBlur}
                     autoFocus
                     placeholder={placeholder}
-                    className={`flex-1 text-primary font-mulish-regular text-sm ${Platform.OS === 'android' ? 'pb-3' : 'pb-1'}`}
+                    className={`flex-1 text-primary font-mulish-regular text-lg ${Platform.OS === 'android' ? 'pb-3' : 'pb-1'}`}
                     keyboardType="phone-pad"
                 />
                 <TouchableOpacity
                     className="bg-accent px-4 py-2 rounded-lg ml-1"
                     onPress={() => { onSend?.(); setEditing(false); }}
                 >
-                    <Text className="text-white font-mulish-regular ">Enviar</Text>
+                    <Text className="text-white font-mulish-bold ">Enviar</Text>
                 </TouchableOpacity>
             </View>
         );

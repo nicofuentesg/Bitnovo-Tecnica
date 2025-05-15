@@ -104,12 +104,12 @@ export default function PaymentScreen() {
                 <SafeAreaView className="w-full h-full bg-white ">
                     <View className="flex-1 pt-12 px-6">
                         <View className="w-full mb-6">
-                            <View className="flex items-center justify-center bg-secondary w-full py-4 rounded-xl">
+                            <View className="flex items-center justify-center bg-quaternary/10 w-full py-4 rounded-xl">
                                 <View className="flex-row items-center justify-center  w-full pb-2 "> 
                                     <Image source={require('../../../assets/money-time.png')} className="h-18 w-18"/>
                                     <View className="flex ps-4">
-                                        <Text className='font-mulish-regular  text-quaternary text-lg pb-1'>Solicitud de pago</Text>
-                                        <Text className='font-mulish-bold text-3xl'>{amount} {currencySymbol}</Text>
+                                        <Text className='font-mulish-regular  text-quaternary text-lg '>Solicitud de pago</Text>
+                                        <Text className='font-mulish-bold text-3xl text-primary'>{amount} {currencySymbol}</Text>
                                     </View>
                                 </View>
                                 <Text className='font-mulish-regular  text-quaternary text-sm py-3'>Comparte el enlace de pago con el cliente</Text>

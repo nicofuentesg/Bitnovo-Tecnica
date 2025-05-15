@@ -10,6 +10,9 @@ interface InputBoxProps {
   showCounter?: boolean;
   maxLength?: number;
   onFocus?: () => void;
+  onBlur?: () => void;
+  editable?: boolean;
+  style?: any;
 }
 
 const InputBox: React.FC<InputBoxProps> = ({ 
@@ -21,6 +24,9 @@ const InputBox: React.FC<InputBoxProps> = ({
   showCounter = false,
   maxLength = 140,
   onFocus,
+  onBlur,
+  editable = true,
+  style,
 }) => {
   const [inputHeight, setInputHeight] = useState(48);
 
@@ -30,7 +36,7 @@ const InputBox: React.FC<InputBoxProps> = ({
 
   return (
     <View>
-      <View className={`flex-row items-center border border-gray-300 rounded-lg px-2`} style={{ minHeight: 48 }}>
+      <View className={`flex-row items-center border border-gray-300 rounded-lg px-2 py-4`} style={[{ minHeight: 48 }, style]}>
         {leftIcon && (
           <Image 
             source={leftIcon} 
@@ -43,12 +49,14 @@ const InputBox: React.FC<InputBoxProps> = ({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#A8A8A8"
+          placeholderTextColor="#647184"
           maxLength={maxLength}
           multiline
           onContentSizeChange={handleContentSizeChange}
           style={{ minHeight: 42}}
           onFocus={onFocus}
+          onBlur={onBlur}
+          editable={editable}
         />
       </View>
       {showCounter && (
