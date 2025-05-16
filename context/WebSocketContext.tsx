@@ -7,6 +7,7 @@ interface WebSocketContextType {
     lastMessage: any | null;
     connect: (identifier: string) => void;
     disconnect: () => void;
+    onIncomplete: () => void;
 }
 
 // Creamos el contexto
@@ -47,6 +48,14 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     const disconnect = () => {
         websocketService.disconnect();
+        // Solo limpiamos el mensaje si el estado es CA o CO
+        if (lastMessage?.status === "CA" || lastMessage?.status === "CO") {
+            websocketService.clearMessage();
+            setLastMessage(null);
+        }
+    };
+
+    const onIncomplete = () => {
         websocketService.clearMessage();
         setLastMessage(null);
     };
@@ -56,7 +65,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
             status,
             lastMessage,
             connect,
-            disconnect
+            disconnect,
+            onIncomplete
         }}>
             {children}
         </WebSocketContext.Provider>

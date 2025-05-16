@@ -76,7 +76,6 @@ class WebSocketService {
                     const data = JSON.parse(event.data);
                     this.lastMessage = data;
                     this.eventEmitter.emit('message', data);
-
                     // Desconectar si el pago fue completado o cancelado
                     if (data.status === "CO" || data.status === "CA") {
                         this.disconnect();
@@ -128,6 +127,7 @@ class WebSocketService {
 
     public onMessage(callback: (data: any) => void): () => void {
         this.eventEmitter.on('message', callback);
+
         return () => this.eventEmitter.off('message', callback);
     }
 

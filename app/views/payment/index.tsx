@@ -4,6 +4,7 @@ import { Alert, AppState, Image, Linking, SafeAreaView, Share, Text, View } from
 import { useWebSocket } from '../../../context/WebSocketContext';
 import { usePaymentWebSocketListener } from "../../../hooks/usePaymentWebSocketListener";
 import { ROUTES } from "../../../navigation/path";
+import { calculatePaymentDetails } from "../../../utils/payment";
 import { EmailSharedButton } from "../../components/payment/EmailSharedButton";
 import { PaymentLinkButton } from "../../components/payment/PaymentLinkButton";
 import { ShareWithOtherAppsButton } from "../../components/payment/ShareWithOtherAppsButton";
@@ -16,9 +17,10 @@ export default function PaymentScreen() {
     const paymentDataParsed = JSON.parse(paymentData as string);
     const { amount, currencySymbol } = paymentDataParsed;
     const [isWhatsAppConfirmationModalVisible, setIsWhatsAppConfirmationModalVisible] = useState(false);
-    const { connect, disconnect } = useWebSocket();
+    const { lastMessage, connect, disconnect } = useWebSocket();
     const [shouldReconnect, setShouldReconnect] = useState(false);
-
+    const [fiatAmount, setFiatAmount] = useState<number | null>(null);
+    
     useEffect(() => {
         const identifier = paymentDataParsed.order.identifier;
 
@@ -55,13 +57,23 @@ export default function PaymentScreen() {
           router.replace(ROUTES.PAYMENT_SUCCESS);
         },
         onIncomplete: () => {
-         Alert.alert(
+          if (lastMessage) {
+            const { remainingFiat } = calculatePaymentDetails({
+                userRequestedAmount: lastMessage.fiat_amount,
+                cryptoAmount: lastMessage.crypto_amount,
+                fiatAmount: lastMessage.fiat_amount,
+                confirmedAmount: lastMessage.confirmed_amount
+            });
+            setFiatAmount(remainingFiat);
+            
+          }
+          Alert.alert(
             "Pago Incompleto",
-            `Por favor, completa el pago.`,
+            `Por favor, completa el pago`,
             [{ text: "OK" }]
           );
         }
-      });
+    });
 
     const handleWhatsAppSend = useCallback(async (number: string) => {
         try {
@@ -83,6 +95,9 @@ export default function PaymentScreen() {
         setShouldReconnect(true);
         setIsWhatsAppConfirmationModalVisible(false);
     }, []);
+    
+    useEffect(() => {
+    }, [fiatAmount]);
 
     const handleShareWithOtherApps = useCallback(async () => {
         try {
@@ -109,7 +124,9 @@ export default function PaymentScreen() {
                                     <Image source={require('../../../assets/money-time.png')} className="h-18 w-18"/>
                                     <View className="flex ps-4">
                                         <Text className='font-mulish-regular  text-quaternary text-lg '>Solicitud de pago</Text>
-                                        <Text className='font-mulish-bold text-3xl text-primary'>{amount} {currencySymbol}</Text>
+                                        <Text className='font-mulish-bold text-3xl text-primary'>
+                                            {fiatAmount ? `${(fiatAmount).toFixed(2)}` : amount} {currencySymbol}
+                                        </Text>
                                     </View>
                                 </View>
                                 <Text className='font-mulish-regular  text-quaternary text-sm py-3'>Comparte el enlace de pago con el cliente</Text>
