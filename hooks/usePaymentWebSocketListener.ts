@@ -8,7 +8,7 @@ type PaymentWebSocketListenerProps = {
 };
 
 export function usePaymentWebSocketListener({ onCancel, onComplete, onIncomplete }: PaymentWebSocketListenerProps) {
-  const { lastMessage, disconnect } = useWebSocket();
+  const { lastMessage, disconnect, onIncomplete: clearMessage } = useWebSocket();
   const hasHandledMessage = useRef(false);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ export function usePaymentWebSocketListener({ onCancel, onComplete, onIncomplete
         }
         if (lastMessage.status === "IA") {
           onIncomplete && onIncomplete();
+          clearMessage();
         }
     }
 
